@@ -22,6 +22,7 @@ Example did document ofÂ `did:dweb:dtds-1:4WERTYKJHGFC4569RFB38E719nmDSAk961Kr`Â
 {
   "@context": "https://w3id.org/did/v1",
   "id": "did:dweb:dtds-1:4WERTYKJHGFC4569RFB38E719nmDSAk961Kr",
+  "controller": "did:dweb:dtds-1:4WERTYKJHGFC4569RFB38E719nmDSAk961Kr",
   "created": 1642992401,
   "updated": null,
   "verificationMethod": [
@@ -79,6 +80,7 @@ example output data
 {
   "@context": "https://w3id.org/did/v1",
   "id": "did:dweb:dtds-1:4WERTYKJHGFC4569RFB38E719nmDSAk961Kr",
+  "controller": "did:dweb:dtds-1:4WERTYKJHGFC4569RFB38E719nmDSAk961Kr",
   "created": 1642992401,
   "updated": null,
   "verificationMethod": [
@@ -117,8 +119,28 @@ example output data
 }
 ```
 ## Security considerations
-1. To prevent replay attacks, did proofs must have a random nonce value. In a decentralized network or smart contract, the code cannot generate reliable random numbers. To solve this problem, we store the nonce value and check if the value is already used.
-2. The user creates a public-private key pair by entering a seed, and the private key is hosted in an agent provided by dweb.
-3. The DID identifier is calculated from the public key using an address translation algorithm, similar to the account address of Ethereum.
+### Eavesdropping
+Given that all data are public and stored on the blockchain, the risk of unauthorized data interception (eavesdropping) is mitigated as the data is not sensitive by design.
+### Replay Attacks
+To prevent replay attacks, did proofs must have a random nonce value. In a decentralized network or smart contract, the code cannot generate reliable random numbers. To solve this problem, we store the nonce value and check if the value is already used.
+### Message Insertion, Deletion, Modification
+The authorization verification mechanism is provided through the DID controller. The DID controller needs to sign the relevant operations, and this signature needs to be verified when the operation is executed to prove that the relevant operation is an authorized operation. 
+### Denial of Service (DoS)
+The decentralized nature of blockchain significantly limits the impact of DoS attacks. Rate controls and request limitations can further mitigate this risk.
+- The use of high-speed, high-security elliptic curve cryptography enables a typical CPU to perform public-key operations faster than those required by a typical Internet connection. The server does not allocate memory until the client sends the initialization packet.
+- For the read request, because multi-signature state proof is adopted, only one ledger node needs to be communicated to obtain the real ledger data
+### Residual Risks
+Residual risks for dweb include:
+- compromise in the used cryptographic primitives (BLS-Signature, X25519, Ed25519 etc.)
+- implementation bugs in the blockchain software, especially as all nodes use the same software package
+- external libraries
+### Integrity Protection and Update Authentication
+All operations require a signature from the DID controller, providing both authentication and integrity protection.
+### Man-In-The-Middle
+During the communication between the client and the blockchain node, the client obtains the public key of the ledger node from the public genesis block. The client authenticates the sensitive write request with a signature with a verification key at the application layer. Since both communicating parties know each other's public key, it is impossible to perform man-in-the-middle attacks on inter-node communication.
+### Policy for Unique Assignment
+The user creates a public-private key pair by entering a seed, and the private key is hosted in an agent provided by DWEB.
+The DID identifier is calculated from the public key using an address translation algorithm, similar to the account address of Ethereum.
+
 ## Privacy Considerations
 The blockchain used by DWEB and the DID documents do not contain personally identifiable information.
